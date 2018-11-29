@@ -1,3 +1,5 @@
+import timeit
+
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
@@ -39,7 +41,7 @@ def rsDataset():
 
 def nnModel():
     batch_size = 128
-    epochs = 2
+    epochs = 1
 
     # Linear stack of layers
     model = Sequential()
@@ -54,9 +56,13 @@ def nnModel():
     model.summary()
 
     # Compile, train, and evaluate the model
+    # Have looked at SGD, Adagrad, Adelta here https://keras.io/optimizers/
+    # RMS seems to be more efficient
     model.compile(loss='categorical_crossentropy',
                   optimizer=RMSprop(),
                   metrics=['accuracy'])
+
+    start_timer = timeit.default_timer()
 
     log = model.fit(image_train, label_train,
                     batch_size=batch_size,
@@ -64,10 +70,13 @@ def nnModel():
                     verbose=1,
                     validation_data=(image_test, label_test))
 
+    end_timer = timeit.default_timer() - start_timer
+
     score = model.evaluate(image_test, label_test, verbose=0)
 
-    print('\nTest loss(%):', score[0]*100/1)
-    print('\nTest accuracy(%):', score[1]*100/1)
+    print('\n\n\t\t\tTest loss(%):', score[0]*100/1)
+    print('\n\t\t\tTest accuracy(%):', score[1]*100/1)
+    print("\n\t\t\tHow long it took to train model at (", epochs, ") epochs:", end_timer, 'seconds\n')
 
 
 def menu():
