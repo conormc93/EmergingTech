@@ -115,14 +115,16 @@ def prediction():
         prediction_array = model.predict(np.array(image, dtype=float))
         # print("\n\t\t\tPrediction:  ", prediction_array, '\n')
 
+        print('\n\t\t\tProbability of a specific number')
+
         # Return a list containing all items in array highest first
         sort = sorted(range(len(prediction_array[0])),
                       key=lambda k: prediction_array[0][k], reverse=True)
 
         for number in sort:
-            print('\n\t\t\tNumber', number, ": ", str(prediction_array[0][number]))
+            print('\t\t\tNumber', number, ": ", str(prediction_array[0][number]))
 
-        percent = format(prediction_array[0][sort[0]] * 100, '.2f')
+        percent = format(max(prediction_array[0]) * 100, '.2f')
 
         print('\n\t\t\tI am ', percent, '% sure that the number is: ', str(sort[0]))
         print('\n\t\t\tThe actual number is: ', label_test[0])
@@ -144,7 +146,7 @@ def menu():
               "\t\t\t2.\tMake a prediction on an image\n"
               "\t\t\t3.\tQuit\n")
 
-        option = input("\n\t\t\tChoose (1) or (2)\n")
+        option = input("\n\t\t\tChoose (1), (2), or (3)\n")
         if option == "1":
             if model_is_built:
                 print('\n\t\tNeural Network Model already built....\n'
@@ -165,7 +167,7 @@ def menu():
             print("\n\t\t\tQuiting the program...")
             exit()
         elif option != "":
-            print("\n\t\t\tInvalid Option! Enter either (1) or (2).")
+            print('\n\t\t\tInvalid Option! Enter either (1), (2), or (3)')
 
 
 # Launches menu
