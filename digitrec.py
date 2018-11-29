@@ -8,9 +8,7 @@ import numpy as np
 # the data, split between train and test sets
 (image_train, label_train), (image_test, label_test) = mnist.load_data()
 
-batch_size = 128
 num_labels = 10
-epochs = 2
 
 
 def rsDataset():
@@ -35,7 +33,59 @@ def rsDataset():
     # convert class vectors to binary class matrices and output details
     label_train = keras.utils.to_categorical(label_train, num_labels)
     label_test = keras.utils.to_categorical(label_test, num_labels)
-    print(label_test, 'label test.')
-    print(image_train.shape[0], 'train samples.')
-    print(image_test.shape[0], 'test samples.')
+    print('\n', image_train.shape[0], 'train samples.')
+    print('\n', image_test.shape[0], 'test samples.')
+
+
+def nnModel():
+    batch_size = 128
+    epochs = 2
+
+    # Linear stack of layers
+    model = Sequential()
+    model.add(
+        Dense(512, activation='relu', input_shape=(784,)))
+    model.add(Dropout(0.2))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(num_labels, activation='softmax'))
+
+    # Print a string summary of the model
+    model.summary()
+
+    # Compile, train, and evaluate the model
+    model.compile(loss='categorical_crossentropy',
+                  optimizer=RMSprop(),
+                  metrics=['accuracy'])
+
+    log = model.fit(image_train, label_train,
+                    batch_size=batch_size,
+                    epochs=epochs,
+                    verbose=1,
+                    validation_data=(image_test, label_test))
+
+    score = model.evaluate(image_test, label_test, verbose=0)
+
+    print('\nTest loss(%):', score[0]*100/1)
+    print('\nTest accuracy(%):', score[1]*100/1)
+
+
+def menu():
+    option = True
+    while option:
+        print("\n\t\tMNIST DIGIT RECOGNITION SCRIPT - Machine Learning Script\n"
+              "\n\t\t\t1.\tLoad, Reshape, Model, & Evaluate the MNIST Dataset\n"
+              "\t\t\t2.\tQuit\n")
+        option = input("\n\t\t\tChoose (1) or (2)\n")
+        if option == "1":
+            rsDataset()
+            nnModel()
+        elif option == "2":
+            print("\n\t\t\tQuiting the program...")
+            exit()
+        elif option != "":
+            print("\n\t\t\tInvalid Option! Enter either (1) or (2).")
+
+
+menu()
 
