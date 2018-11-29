@@ -16,7 +16,7 @@ import numpy as np
 num_labels = 10
 
 
-def rsDataset():
+def reshape_dataset():
     global image_train
     global image_test
     global label_train
@@ -42,7 +42,8 @@ def rsDataset():
     print('\n', image_test.shape[0], 'test samples.')
 
 
-def nnModel():
+def neural_net_model():
+    global model
     batch_size = 128
     epochs = 1
 
@@ -82,35 +83,90 @@ def nnModel():
 
 
 def prediction():
-    input = "\n\t\t\tEnter file name -- Do not enter file extension (.png .jpeg)" \
-            "\n\t\t\t'exit' to Main Menu: \n"
-    while input != "exit":
-        # Get user input
-        input = input("\t\t\tFile(Image) Name: \n")
+    print('\n\t\t\tEnter file name -- Including extension (.png .jpeg)'
+          '\n\t\t\tEnter "exit" to return to the Main Menu: \n')
+
+    # Get user input
+    user_input = input("\n\n\t\t\tFile(Image) Name: ")
+
+    while user_input != "exit":
 
         # check for exit condition
-        if input == "exit":
+        if user_input == "exit":
             print("Returning to main menu...")
             break
 
-        # img = Image.open("images/" + input)
+        image = np.invert(Image.open("images/" + user_input))
+
+        # convert images from one color space to another
+        # in this instance we want to convert our images to GREY
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # resize our image to 28x28 pixels
+        image = cv2.resize(image, (28, 28), interpolation=cv2.INTER_AREA)
+
+        # inverts the bits of our image array
+        image = cv2.bitwise_not(image)
+        image = image.reshape(1, 784)
+        image = image.astype('float32')
+        image /= 255
+
+        # predicts the handwritten digit in the image array
+        prediction_array = model.predict(np.array(image, dtype=float))
+        # print("\n\t\t\tPrediction:  ", prediction_array, '\n')
+
+        # Return a list containing all items in array highest first
+        sort = sorted(range(len(prediction_array[0])),
+                      key=lambda k: prediction_array[0][k], reverse=True)
+
+        for number in sort:
+            print('\n\t\t\tNumber', number, ": ", str(prediction_array[0][number]))
+
+        percent = format(prediction_array[0][sort[0]] * 100, '.2f')
+
+        print('\n\t\t\tI am ', percent, '% sure that the number is: ', str(sort[0]))
+        print('\n\t\t\tThe actual number is: ', label_test[0])
+        print('\n=================================================================================================\n')
+        print('\n\t\t\tEnter file name -- Including extension (.png .jpeg)'
+              '\n\t\t\tEnter "exit" to return to the Main Menu: \n')
+
+        # Get user input
+        user_input = input("\n\n\t\t\tFile(Image) Name: ")
 
 
 def menu():
+    model_is_built = False
     option = True
     while option:
+
         print("\n\t\tMNIST DIGIT RECOGNITION SCRIPT - Machine Learning Script\n"
               "\n\t\t\t1.\tLoad, Reshape, Model, & Evaluate the MNIST Dataset\n"
-              "\t\t\t2.\tQuit\n")
+              "\t\t\t2.\tMake a prediction on an image\n"
+              "\t\t\t3.\tQuit\n")
+
         option = input("\n\t\t\tChoose (1) or (2)\n")
         if option == "1":
-            rsDataset()
-            nnModel()
+            if model_is_built:
+                print('\n\t\tNeural Network Model already built....\n'
+                      '\t\tReturning to main menu.\n')
+                menu()
+            else:
+                reshape_dataset()
+                neural_net_model()
+                model_is_built = True
         elif option == "2":
+            if model_is_built:
+                prediction()
+            else:
+                print('\n\t\tNeural Network Model isn`t built....\n'
+                      '\t\tSelect option (1)', '\n')
+                menu()
+        elif option == "3":
             print("\n\t\t\tQuiting the program...")
             exit()
         elif option != "":
             print("\n\t\t\tInvalid Option! Enter either (1) or (2).")
 
 
+# Launches menu
 menu()
