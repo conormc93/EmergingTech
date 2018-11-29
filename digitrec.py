@@ -1,4 +1,7 @@
 import timeit
+# Import Cv2  and Image for image processing
+import cv2
+from PIL import Image
 
 import keras
 from keras.datasets import mnist
@@ -45,8 +48,7 @@ def nnModel():
 
     # Linear stack of layers
     model = Sequential()
-    model.add(
-        Dense(512, activation='relu', input_shape=(784,)))
+    model.add(Dense(512, activation='relu', input_shape=(784,)))
     model.add(Dropout(0.2))
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.2))
@@ -74,9 +76,24 @@ def nnModel():
 
     score = model.evaluate(image_test, label_test, verbose=0)
 
-    print('\n\n\t\t\tTest loss(%):', score[0]*100/1)
-    print('\n\t\t\tTest accuracy(%):', score[1]*100/1)
+    print('\n\n\t\t\tTest loss(%):', score[0] * 100 / 1)
+    print('\n\t\t\tTest accuracy(%):', score[1] * 100 / 1)
     print("\n\t\t\tHow long it took to train model at (", epochs, ") epochs:", end_timer, 'seconds\n')
+
+
+def prediction():
+    input = "\n\t\t\tEnter file name -- Do not enter file extension (.png .jpeg)" \
+            "\n\t\t\t'exit' to Main Menu: \n"
+    while input != "exit":
+        # Get user input
+        input = input("\t\t\tFile(Image) Name: \n")
+
+        # check for exit condition
+        if input == "exit":
+            print("Returning to main menu...")
+            break
+
+        # img = Image.open("images/" + input)
 
 
 def menu():
@@ -97,4 +114,3 @@ def menu():
 
 
 menu()
-
