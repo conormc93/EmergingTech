@@ -116,18 +116,17 @@ def prediction():
         # print("\n\t\t\tPrediction:  ", prediction_array, '\n')
 
         print('\n\t\t\tProbability of a specific number')
+        counter = 0
+        for predicted in prediction_array[0]:
+            print('\t\t\t\tNumber', counter, '=', "%.5f" % predicted, '%')
+            counter += 1
 
-        # Return a list containing all items in array highest first
-        sort = sorted(range(len(prediction_array[0])),
-                      key=lambda k: prediction_array[0][k], reverse=True)
-
-        for number in sort:
-            print('\t\t\tNumber', number, ": ", str(prediction_array[0][number]))
-
+        # Get index of closest(MAX) prediction
+        number_predicted = prediction_array.argmax(axis=1)
         percent = format(max(prediction_array[0]) * 100, '.2f')
 
-        print('\n\t\t\tI am ', percent, '% sure that the number is: ', str(sort[0]))
-        print('\n\t\t\tThe actual number is: ', label_test[0])
+        print("\n\t\t\tThe number predicted is:", number_predicted, ",with", percent, '% accuracy')
+        # print('\n\t\t\tThe actual number is: ', label_test[0])
         print('\n=================================================================================================\n')
         print('\n\t\t\tEnter file name -- Including extension (.png .jpeg)'
               '\n\t\t\tEnter "exit" to return to the Main Menu: \n')
