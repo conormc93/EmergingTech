@@ -22,6 +22,17 @@ def reshape_dataset():
     global label_train
     global label_test
 
+    # Print out the shapes of the images and set variables values to the shapes
+    print("Training/testing Images shape:", image_train.shape, "/", image_test.shape)
+    print("Training/testing Labels shape:", label_train.shape, "/", label_test.shape)
+    print("First 5 training labels and testing labels:", label_train[:5], "/", label_test[:5])
+
+    # Set no_rows and no_cols to the number of rows and columns in an image
+    no_rows = image_train.shape[1]
+    no_cols = image_train.shape[2]
+
+    print("There are", no_rows, "rows and", no_cols, "columns in an image")
+
     # reshape the data set
     image_train = image_train.reshape(60000, 784)
     image_test = image_test.reshape(10000, 784)
