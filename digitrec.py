@@ -56,7 +56,7 @@ def reshape_dataset():
 def neural_net_model():
     global model
     batch_size = 128
-    epochs = 1
+    epochs = 10
 
     # Linear stack of layers
     model = Sequential()
@@ -78,11 +78,11 @@ def neural_net_model():
 
     start_timer = timeit.default_timer()
 
-    log = model.fit(image_train, label_train,
-                    batch_size=batch_size,
-                    epochs=epochs,
-                    verbose=1,
-                    validation_data=(image_test, label_test))
+    history = model.fit(image_train, label_train,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        verbose=1,
+                        validation_data=(image_test, label_test))
 
     end_timer = timeit.default_timer() - start_timer
 
@@ -137,7 +137,7 @@ def prediction():
             print('\n\t\t\tProbability of a specific number')
             counter = 0
             for predicted in prediction_array[0]:
-                print('\t\t\t\tNumber', counter, '=', "%.5f" % (predicted * 100/1), '%')
+                print('\t\t\t\tNumber', counter, '=', "%.5f" % (predicted * 100 / 1), '%')
                 counter += 1
 
             # Returns the indices of the maximum values along an axis.
