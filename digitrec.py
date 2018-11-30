@@ -8,6 +8,7 @@ import numpy as np
 import timeit
 import cv2
 from PIL import Image
+import os.path
 
 # the data, split between train and test sets
 (image_train, label_train), (image_test, label_test) = mnist.load_data()
@@ -80,8 +81,12 @@ def neural_net_model():
     print('\n\t\t\tTest accuracy(%):', score[1] * 100 / 1)
     print("\n\t\t\tHow long it took to train model at (", epochs, ") epochs:", end_timer, 'seconds\n')
 
+    model.save('model/seq_nn_model')
+
 
 def prediction():
+    global model
+
     print('\n\t\t\tEnter file name -- Including extension (.png .jpeg)'
           '\n\t\t\tEnter "exit" to return to the Main Menu: \n')
 
@@ -111,6 +116,9 @@ def prediction():
             image = image.astype('float32')
             image /= 255
 
+            # Loads a model saved via save_model
+            model = load_model('model/seq_nn_model')
+
             # predicts the handwritten digit in the image array
             prediction_array = model.predict(np.array(image, dtype=float))
             # print("\n\t\t\tPrediction:  ", prediction_array, '\n')
@@ -118,9 +126,10 @@ def prediction():
             print('\n\t\t\tProbability of a specific number')
             counter = 0
             for predicted in prediction_array[0]:
-                print('\t\t\t\tNumber', counter, '=', "%.5f" % predicted, '%')
+                print('\t\t\t\tNumber', counter, '=', "%.5f" % (predicted * 100/1), '%')
                 counter += 1
 
+            # Returns the indices of the maximum values along an axis.
             # Get index of closest(MAX) prediction
             number_predicted = prediction_array.argmax(axis=1)
             percent = format(max(prediction_array[0]) * 100, '.2f')
@@ -132,7 +141,7 @@ def prediction():
 
             # Get user input
             user_input = input('\n\n\t\t\tFile(Image) Name: ')
-            
+
         except FileNotFoundError:
             print('(ERROR)--> ', user_input, 'file not found.')
             print('\n===============================================================================================\n')
@@ -145,6 +154,9 @@ def prediction():
 
 def menu():
     model_is_built = False
+    if os.path.isfile('model/seq_nn_model'):
+        model_is_built = True
+
     option = True
     while option:
 
