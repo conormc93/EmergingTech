@@ -1,14 +1,13 @@
-import timeit
-# Import Cv2  and Image for image processing
-import cv2
-from PIL import Image
-
 import keras
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
+from keras.models import load_model
 import numpy as np
+import timeit
+import cv2
+from PIL import Image
 
 # the data, split between train and test sets
 (image_train, label_train), (image_test, label_test) = mnist.load_data()
@@ -96,43 +95,52 @@ def prediction():
             print("Returning to main menu...")
             break
 
-        image = np.invert(Image.open("images/" + user_input))
+        try:
+            image = np.invert(Image.open("images/" + user_input))
 
-        # convert images from one color space to another
-        # in this instance we want to convert our images to GREY
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            # convert images from one color space to another
+            # in this instance we want to convert our images to GREY
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-        # resize our image to 28x28 pixels
-        image = cv2.resize(image, (28, 28), interpolation=cv2.INTER_AREA)
+            # resize our image to 28x28 pixels
+            image = cv2.resize(image, (28, 28), interpolation=cv2.INTER_AREA)
 
-        # inverts the bits of our image array
-        image = cv2.bitwise_not(image)
-        image = image.reshape(1, 784)
-        image = image.astype('float32')
-        image /= 255
+            # inverts the bits of our image array
+            image = cv2.bitwise_not(image)
+            image = image.reshape(1, 784)
+            image = image.astype('float32')
+            image /= 255
 
-        # predicts the handwritten digit in the image array
-        prediction_array = model.predict(np.array(image, dtype=float))
-        # print("\n\t\t\tPrediction:  ", prediction_array, '\n')
+            # predicts the handwritten digit in the image array
+            prediction_array = model.predict(np.array(image, dtype=float))
+            # print("\n\t\t\tPrediction:  ", prediction_array, '\n')
 
-        print('\n\t\t\tProbability of a specific number')
-        counter = 0
-        for predicted in prediction_array[0]:
-            print('\t\t\t\tNumber', counter, '=', "%.5f" % predicted, '%')
-            counter += 1
+            print('\n\t\t\tProbability of a specific number')
+            counter = 0
+            for predicted in prediction_array[0]:
+                print('\t\t\t\tNumber', counter, '=', "%.5f" % predicted, '%')
+                counter += 1
 
-        # Get index of closest(MAX) prediction
-        number_predicted = prediction_array.argmax(axis=1)
-        percent = format(max(prediction_array[0]) * 100, '.2f')
+            # Get index of closest(MAX) prediction
+            number_predicted = prediction_array.argmax(axis=1)
+            percent = format(max(prediction_array[0]) * 100, '.2f')
 
-        print("\n\t\t\tThe number predicted is:", number_predicted, ",with", percent, '% accuracy')
-        # print('\n\t\t\tThe actual number is: ', label_test[0])
-        print('\n=================================================================================================\n')
-        print('\n\t\t\tEnter file name -- Including extension (.png .jpeg)'
-              '\n\t\t\tEnter "exit" to return to the Main Menu: \n')
+            print("\n\t\t\tThe number predicted is:", number_predicted, ",with", percent, '% accuracy')
+            print('\n===============================================================================================\n')
+            print('\n\t\t\tEnter file name -- Including extension (.png .jpeg)'
+                  '\n\t\t\tEnter "exit" to return to the Main Menu: \n')
 
-        # Get user input
-        user_input = input("\n\n\t\t\tFile(Image) Name: ")
+            # Get user input
+            user_input = input('\n\n\t\t\tFile(Image) Name: ')
+            
+        except FileNotFoundError:
+            print('(ERROR)--> ', user_input, 'file not found.')
+            print('\n===============================================================================================\n')
+            print('\n\t\t\tEnter file name -- Including extension (.png .jpeg)'
+                  '\n\t\t\tEnter "exit" to return to the Main Menu: \n')
+
+            # Get user input
+            user_input = input("\n\n\t\t\tFile(Image) Name: ")
 
 
 def menu():
